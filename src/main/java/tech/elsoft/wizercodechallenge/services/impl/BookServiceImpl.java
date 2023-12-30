@@ -1,40 +1,70 @@
 package tech.elsoft.wizercodechallenge.services.impl;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tech.elsoft.wizercodechallenge.DTOs.requests.BookQueryFilter;
 import tech.elsoft.wizercodechallenge.DTOs.requests.CreateBook;
 import tech.elsoft.wizercodechallenge.DTOs.responses.BookResponse;
 import tech.elsoft.wizercodechallenge.entities.Book;
+import tech.elsoft.wizercodechallenge.entities.BookCategory;
+import tech.elsoft.wizercodechallenge.exceptions.ApiBadRequestException;
 import tech.elsoft.wizercodechallenge.exceptions.ApiNotFoundException;
 import tech.elsoft.wizercodechallenge.mapper.BookMapper;
+import tech.elsoft.wizercodechallenge.repositories.BookCategoryRepository;
 import tech.elsoft.wizercodechallenge.repositories.BookRepository;
-import tech.elsoft.wizercodechallenge.repositories.specifications.ExampleSpecification;
-import tech.elsoft.wizercodechallenge.repositories.specifications.RangeSpecification;
-import tech.elsoft.wizercodechallenge.repositories.specifications.ZonedDateTimeRange;
+import tech.elsoft.wizercodechallenge.repositories.specifications.FilterSpecification;
 import tech.elsoft.wizercodechallenge.services.interfaces.BookService;
 
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookServiceImpl implements BookService {
 
     final BookRepository bookRepository;
+    final BookCategoryRepository bookCategoryRepository;
+
 
     final BookMapper bookMapper;
+
+
+    final EntityManager entityManager;
     @Override
-    public List<BookResponse> createBooks(List<CreateBook> bookRequest) {
-        List<Book> books = bookMapper.toEntity(bookRequest);
-        books = bookRepository.saveAll(books);
-        return mapBookResponseList(books);
+    public List<BookResponse> createBooks(List<CreateBook> bookRequest, boolean ignoreDuplicate) {
+        Set<CreateBook> createBookSet = new HashSet<>(bookRequest);
+
+        int difference = Math.abs(createBookSet.size() - bookRequest.size());
+
+        if (!ignoreDuplicate && createBookSet.size() != bookRequest.size()){
+            String responseMessage = String.format("ignoreDuplicate is set to false and there about %d duplicate title in the request, set it to true or manually remove duplicate", difference);
+            throw new ApiBadRequestException(responseMessage);
+        }
+        List<String> titlesToCheck = bookRequest.stream().map(CreateBook::title).toList();
+        List<Book> foundBasedOnTitle = bookRepository.findAllByTitleIsInIgnoreCase(titlesToCheck);
+        List<String> foundTitle = foundBasedOnTitle.stream().map(Book::getTitle).toList();
+        createBookSet.removeIf(x-> foundTitle.stream().anyMatch(d -> StringUtils.equalsIgnoreCase(x.title(),d)));
+        List<Book> booksToSave = bookMapper.toEntity(createBookSet.stream().toList());
+
+        for(Book bk : booksToSave){
+            Set<BookCategory> categories = new HashSet<>();
+            CreateBook createBook = createBookSet.stream().filter(x -> StringUtils.equalsIgnoreCase(x.title(), bk.getTitle())).findFirst().orElse(null);
+            if(createBook == null || createBook.categories() == null || createBook.categories().isEmpty()) continue;
+            categories = new HashSet<>(bookCategoryRepository.findAllById(createBook.categories()));
+            bk.setCategories(categories);
+        }
+
+
+        log.info("Saving  {} books out of {} request", booksToSave.size(), bookRequest.size());
+        booksToSave = bookRepository.saveAll(booksToSave);
+        return mapBookResponseList(booksToSave);
     }
 
     private  List<BookResponse> mapBookResponseList(List<Book> books) {
@@ -44,7 +74,17 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookResponse updateDetailsById(Long id, CreateBook bookRequest) {
-        return null;
+        Book book = bookRepository.findById(id).orElseThrow(() -> new ApiNotFoundException("Book not found with Id " + id));
+        Optional<Book> checkNewTitle = bookRepository.findByTitleEqualsIgnoreCase(bookRequest.title());
+        if(checkNewTitle.isPresent() && !Objects.equals(book, checkNewTitle.get())){
+            throw new ApiBadRequestException("The new title already exist");
+        }
+        book.setTitle(book.getTitle());
+        book.setDatePublished(bookRequest.datePublished());
+//        book.setCategory(bookRequest.category());
+        book = bookRepository.save(book);
+
+        return mapSingleBookResponse(book);
     }
 
     @Override
@@ -61,32 +101,30 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Page<BookResponse> GetAll(Pageable pageable, BookQueryFilter filters) {
-
-        ExampleMatcher ignoreCase = ExampleMatcher.matchingAny().withIgnoreCase()
-                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-
-        Book book = new Book();
-        book.setCategory(filters.getSearch());
-        book.setTitle(filters.getTitle());
-        book.setCategory(filters.getCategory());
-
-        Specification<Book> specification = new ExampleSpecification<Book>().getSpecificationFromExample(Example.of(book, ignoreCase));
-
-        if (filters.getDatePublishedFrom() != null && filters.getDatePublishedTo() != null) {
-            ZonedDateTime fromDateTime = ZonedDateTime.of(filters.getDatePublishedFrom(), LocalTime.MIN, ZoneOffset.UTC);
-            ZonedDateTime toDateTime = ZonedDateTime.of(filters.getDatePublishedTo(), LocalTime.MAX, ZoneOffset.UTC);
-
-            ZonedDateTimeRange range = new ZonedDateTimeRange("datePublished", fromDateTime, toDateTime);
-            specification = specification.and(new RangeSpecification<Book>().withInRange(range));
-        }
-        if (filters.getCreatedDateFrom() != null && filters.getCreatedDateTo() != null) {
-            ZonedDateTime fromDateTime = ZonedDateTime.of(filters.getCreatedDateFrom(), LocalTime.MIN, ZoneOffset.UTC);
-            ZonedDateTime toDateTime = ZonedDateTime.of(filters.getCreatedDateTo(), LocalTime.MAX, ZoneOffset.UTC);
-
-            ZonedDateTimeRange range = new ZonedDateTimeRange("dateCreated", fromDateTime, toDateTime);
-            specification = specification.and(new RangeSpecification<Book>().withInRange(range));
-        }
+        Specification<Book> specification = FilterSpecification.FindByFilter(filters);
         return bookRepository.findAll(specification, pageable).map(bookMapper::toResponse);
-//        return bookMapper.toResponse(books);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        bookRepository.deleteById(id);
+    }
+
+    @Override
+    public void addToFavouriteBooks(List<Long> booksId) {
+        List<Book> books = bookRepository.findAllById(booksId);
+        books.forEach(x-> x.setFavourite(Boolean.TRUE));
+        bookRepository.saveAll(books);
+    }
+
+    @Override
+    public Page<BookResponse> getFavouriteBooks(Pageable pageable) {
+        Page<Book> books = bookRepository.findAllByFavouriteIsTrue(pageable);
+        return books.map(bookMapper::toResponse);
+    }
+    @Override
+    public Page<BookResponse> viewAllDeletedBooks(Pageable pageable) {
+        Page<Book> books = bookRepository.findAllByDeletedEquals(pageable);
+        return books.map(bookMapper::toResponse);
     }
 }

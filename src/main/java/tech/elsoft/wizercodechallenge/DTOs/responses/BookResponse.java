@@ -14,11 +14,9 @@ import java.util.List;
 public record BookResponse (
       Long id,
         String title,
-
+String author,
+       Boolean favourite,
         String category,
-
-        List<String> tags,
-
 
         LocalDate datePublished,
         LocalDate dateCreated,

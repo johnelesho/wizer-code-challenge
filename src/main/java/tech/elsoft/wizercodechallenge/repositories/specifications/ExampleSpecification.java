@@ -18,12 +18,11 @@ public class ExampleSpecification<T>
 		
 	    return (root,  query, builder) -> {
 			
-	    	predicates.add(QueryByExamplePredicateBuilder.getPredicate(
+	    	return builder.and(QueryByExamplePredicateBuilder.getPredicate(
 	    			root, 
 	    			builder, 
 	    			example, EscapeCharacter.of('\\')));
-	    	
-	    	return builder.and(predicates.toArray(new Predicate[0]));
+
 	    };
 	 }
 	

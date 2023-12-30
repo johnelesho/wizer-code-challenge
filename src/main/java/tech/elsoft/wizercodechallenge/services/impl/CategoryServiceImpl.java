@@ -1,42 +1,73 @@
 package tech.elsoft.wizercodechallenge.services.impl;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Example;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tech.elsoft.wizercodechallenge.DTOs.requests.CategoryQueryFilter;
 import tech.elsoft.wizercodechallenge.DTOs.requests.CreateBookCategory;
 import tech.elsoft.wizercodechallenge.DTOs.responses.BookCategoryResponse;
+import tech.elsoft.wizercodechallenge.DTOs.responses.BookResponse;
+import tech.elsoft.wizercodechallenge.entities.Book;
 import tech.elsoft.wizercodechallenge.entities.BookCategory;
+import tech.elsoft.wizercodechallenge.exceptions.ApiBadRequestException;
 import tech.elsoft.wizercodechallenge.exceptions.ApiNotFoundException;
 import tech.elsoft.wizercodechallenge.mapper.BookCategoryMapper;
+import tech.elsoft.wizercodechallenge.mapper.BookMapper;
 import tech.elsoft.wizercodechallenge.repositories.BookCategoryRepository;
-import tech.elsoft.wizercodechallenge.repositories.specifications.ExampleSpecification;
-import tech.elsoft.wizercodechallenge.repositories.specifications.RangeSpecification;
-import tech.elsoft.wizercodechallenge.repositories.specifications.ZonedDateTimeRange;
+import tech.elsoft.wizercodechallenge.repositories.BookRepository;
+import tech.elsoft.wizercodechallenge.repositories.specifications.FilterSpecification;
 import tech.elsoft.wizercodechallenge.services.interfaces.CategoryService;
 
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
     final BookCategoryRepository categoryRepository;
+    final BookRepository bookRepository;
     final BookCategoryMapper bookCategoryMapper;
+    final BookMapper bookMapper;
+    final EntityManager entityManager;
     @Override
-    public List<BookCategoryResponse> createCategory(List<CreateBookCategory> request) {
-        List<BookCategory> categories = bookCategoryMapper.toEntity(request);
-        BeanUtils.copyProperties(request, categories);
-        categories = categoryRepository.saveAll(categories);
-        return mapBookCategoryResponseList(categories);
+    public List<BookCategoryResponse> createCategory(List<CreateBookCategory> request, boolean ignoreDuplicate) {
+
+
+        // Check the request for duplicates,
+        // would have used a set in the payload, but the user needs to know about the duplicates too
+        // Duplicate titles should not come from the user
+        Set<CreateBookCategory> requestSet = new HashSet<>(request);
+        int difference = Math.abs(requestSet.size() - request.size());
+        if (!ignoreDuplicate && requestSet.size() != request.size()){
+
+            String responseMessage = String.format("ignoreDuplicate is set to false and there about %d duplicate categoryNames in the request, set it to true or manually remove duplicate", difference);
+            throw new ApiBadRequestException(responseMessage);
+        }
+        log.info("Ignoring {} duplicates catagoryName", difference);
+        // Extract the names to check if they exist in the database
+        List<String> namesToCheck = requestSet.stream().map(CreateBookCategory::categoryName).toList();
+        List<BookCategory> foundBasedOnName = categoryRepository.findAllByCategoryNameIsInIgnoreCase(namesToCheck);
+        List<String> foundName = foundBasedOnName.stream().map(BookCategory::getCategoryName).toList();
+        Set<BookCategory> categoryEntityFromRequest = bookCategoryMapper.toEntity(requestSet);
+
+        Set<BookCategory> categoriesToSave = new HashSet<>();
+
+        for(BookCategory bk : categoryEntityFromRequest){
+            if(foundName.stream().noneMatch(d -> StringUtils.equalsIgnoreCase(bk.getCategoryName(),d))){
+                categoriesToSave.add(bk);
+            }
+        }
+        log.info("Saving  {} books out of {} request", categoriesToSave.size(), request.size());
+        var response = categoryRepository.saveAll(categoriesToSave);
+        return mapBookCategoryResponseList(response);
+
     }
     private  List<BookCategoryResponse> mapBookCategoryResponseList(List<BookCategory> categories) {
         return bookCategoryMapper.toResponse(categories);
@@ -44,7 +75,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public BookCategoryResponse updateDetailsById(Long id, CreateBookCategory request) {
-        return null;
+        BookCategory category = categoryRepository.findById(id).orElseThrow(() -> new ApiNotFoundException("BookCategory not found with Id " + id));
+        Optional<BookCategory> checkNewName = categoryRepository.findByCategoryNameEqualsIgnoreCase(request.categoryName());
+        if(checkNewName.isPresent() && !Objects.equals(category, checkNewName.get())){
+            throw new ApiBadRequestException("The new categoryName already exist");
+        }
+        category.setCategoryDescription(request.categoryDescription());
+        category.setCategoryName(request.categoryName());
+
+        category = categoryRepository.save(category);
+        return mapSingleBookCategoryResponse(category);
     }
 
     @Override
@@ -59,23 +99,36 @@ public class CategoryServiceImpl implements CategoryService {
     }
     @Override
     public Page<BookCategoryResponse> GetAll(Pageable pageable, CategoryQueryFilter filters) {
-        ExampleMatcher ignoreCase = ExampleMatcher.matchingAny().withIgnoreCase()
-                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
 
-        BookCategory bc = new BookCategory();
-        bc.setCategoryName(filters.getCategoryName());
-        bc.setCategoryDescription(filters.getCategoryDescription());
+        Specification<BookCategory> bookCategorySpecification = FilterSpecification.FindByFilter(filters);
 
-        Specification<BookCategory> specification = new ExampleSpecification<BookCategory>().getSpecificationFromExample(Example.of(bc, ignoreCase));
+        return categoryRepository.findAll(bookCategorySpecification, pageable).map(bookCategoryMapper::toResponse);
+    }
 
-        if (filters.getCreatedDateFrom() != null && filters.getCreatedDateTo() != null) {
-            ZonedDateTime fromDateTime = ZonedDateTime.of(filters.getCreatedDateFrom(), LocalTime.MIN, ZoneOffset.UTC);
-            ZonedDateTime toDateTime = ZonedDateTime.of(filters.getCreatedDateTo(), LocalTime.MAX, ZoneOffset.UTC);
+    @Override
+    public void addBooksToCategory(Long id, List<Long> bookIds) {
+        BookCategory category = categoryRepository.findById(id).orElseThrow(() -> new ApiNotFoundException("BookCategory not found with Id " + id));
+        List<Book> allBooks = bookRepository.findAllById(bookIds);
+        category.setBooks(new HashSet<>(allBooks));
+        BookCategory save = categoryRepository.save(category);
+    }
 
-            ZonedDateTimeRange range = new ZonedDateTimeRange("dateCreated", fromDateTime, toDateTime);
-            specification = specification.and(new RangeSpecification<BookCategory>().withInRange(range));
+    @Override
+    public void deleteById(Long id) {
+        categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<BookResponse> getBooksInACategory(Long id, Pageable pageable) {
+        BookCategory category = categoryRepository.findById(id).orElseThrow(() -> new ApiNotFoundException("BookCategory not found with Id " + id));
+        if(category.getBooks() == null || category.getBooks().isEmpty()){
+            throw new ApiNotFoundException("There are no books in the category");
         }
-        return categoryRepository.findAll(specification, pageable).map(bookCategoryMapper::toResponse);
-//        return bookCategoryMapper.toResponse(bcs);
+       return new PageImpl<>(bookMapper.toResponse(category.getBooks()).stream().toList(), pageable, category.getBooks().size());
+    }
+    @Override
+    public Page<BookCategoryResponse> viewAllDeletedCategory(Pageable pageable) {
+        Page<BookCategory> books = categoryRepository.findAllDeleted(pageable);
+        return books.map(bookCategoryMapper::toResponse);
     }
 }
