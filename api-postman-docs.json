@@ -1,0 +1,3188 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+    "title": "OpenAPI definition",
+        "version": "v0"
+},
+    "servers": [
+    {
+        "url": "http://localhost:8080",
+        "description": "Generated server url"
+    }
+],
+    "tags": [
+    {
+        "name": "Actuator",
+        "description": "Monitor and interact",
+        "externalDocs": {
+            "description": "Spring Boot Actuator Web API Documentation",
+            "url": "https://docs.spring.io/spring-boot/docs/current/actuator-api/html/"
+        }
+    }
+],
+    "paths": {
+    "/api/v1/books/{id}": {
+        "get": {
+            "tags": [
+                "books-controller"
+            ],
+                "operationId": "GetById",
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "put": {
+            "tags": [
+                "books-controller"
+            ],
+                "operationId": "editById",
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            ],
+                "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/CreateBook"
+                        }
+                    }
+                },
+                "required": true
+            },
+            "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "delete": {
+            "tags": [
+                "books-controller"
+            ],
+                "operationId": "deleteById",
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v1/books/favourite-books": {
+        "get": {
+            "tags": [
+                "books-controller"
+            ],
+                "operationId": "getFavouriteBooks",
+                "parameters": [
+                {
+                    "name": "page",
+                    "in": "query",
+                    "description": "Zero-based page index (0..N)",
+                    "required": false,
+                    "schema": {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0
+                    }
+                },
+                {
+                    "name": "size",
+                    "in": "query",
+                    "description": "The size of the page to be returned",
+                    "required": false,
+                    "schema": {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20
+                    }
+                },
+                {
+                    "name": "sort",
+                    "in": "query",
+                    "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "put": {
+            "tags": [
+                "books-controller"
+            ],
+                "operationId": "addToFavouriteBooks",
+                "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/LongWrapper"
+                        }
+                    }
+                },
+                "required": true
+            },
+            "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v1/book-category/{id}": {
+        "get": {
+            "tags": [
+                "category-controller"
+            ],
+                "operationId": "GetById_1",
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "put": {
+            "tags": [
+                "category-controller"
+            ],
+                "operationId": "editById_1",
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            ],
+                "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/CreateBookCategory"
+                        }
+                    }
+                },
+                "required": true
+            },
+            "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "delete": {
+            "tags": [
+                "category-controller"
+            ],
+                "operationId": "deleteById_1",
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v1/book-category/{id}/books": {
+        "get": {
+            "tags": [
+                "category-controller"
+            ],
+                "operationId": "getBooksInACategory",
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                {
+                    "name": "page",
+                    "in": "query",
+                    "description": "Zero-based page index (0..N)",
+                    "required": false,
+                    "schema": {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0
+                    }
+                },
+                {
+                    "name": "size",
+                    "in": "query",
+                    "description": "The size of the page to be returned",
+                    "required": false,
+                    "schema": {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20
+                    }
+                },
+                {
+                    "name": "sort",
+                    "in": "query",
+                    "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "put": {
+            "tags": [
+                "category-controller"
+            ],
+                "operationId": "addBooksToCategory",
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            ],
+                "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/LongWrapper"
+                        }
+                    }
+                },
+                "required": true
+            },
+            "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v1/books": {
+        "get": {
+            "tags": [
+                "books-controller"
+            ],
+                "operationId": "GetAllWithFiltersAndPagination",
+                "parameters": [
+                {
+                    "name": "page",
+                    "in": "query",
+                    "description": "Zero-based page index (0..N)",
+                    "required": false,
+                    "schema": {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0
+                    }
+                },
+                {
+                    "name": "size",
+                    "in": "query",
+                    "description": "The size of the page to be returned",
+                    "required": false,
+                    "schema": {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20
+                    }
+                },
+                {
+                    "name": "sort",
+                    "in": "query",
+                    "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "name": "title",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "category",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "author",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "isbn",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "publisher",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "favorite",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean"
+                    }
+                },
+                {
+                    "name": "datePublishedFrom",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                },
+                {
+                    "name": "datePublishedTo",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                },
+                {
+                    "name": "createdDateFrom",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                {
+                    "name": "createdDateTo",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                {
+                    "name": "search",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "post": {
+            "tags": [
+                "books-controller"
+            ],
+                "operationId": "addBulk",
+                "parameters": [
+                {
+                    "name": "ignoreDuplicate",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean",
+                        "default": false
+                    }
+                }
+            ],
+                "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                                "items": {
+                                "$ref": "#/components/schemas/CreateBook"
+                            }
+                        }
+                    }
+                },
+                "required": true
+            },
+            "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v1/book-category": {
+        "get": {
+            "tags": [
+                "category-controller"
+            ],
+                "operationId": "GetAllWithFiltersAndPagination_1",
+                "parameters": [
+                {
+                    "name": "page",
+                    "in": "query",
+                    "description": "Zero-based page index (0..N)",
+                    "required": false,
+                    "schema": {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0
+                    }
+                },
+                {
+                    "name": "size",
+                    "in": "query",
+                    "description": "The size of the page to be returned",
+                    "required": false,
+                    "schema": {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20
+                    }
+                },
+                {
+                    "name": "sort",
+                    "in": "query",
+                    "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "name": "categoryName",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "categoryDescription",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "createdDateFrom",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                {
+                    "name": "createdDateTo",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                {
+                    "name": "search",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "post": {
+            "tags": [
+                "category-controller"
+            ],
+                "operationId": "addBulk_1",
+                "parameters": [
+                {
+                    "name": "ignoreDuplicate",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean",
+                        "default": false
+                    }
+                }
+            ],
+                "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                                "items": {
+                                "$ref": "#/components/schemas/CreateBookCategory"
+                            }
+                        }
+                    }
+                },
+                "required": true
+            },
+            "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/loggers/{name}": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'loggers-name'",
+                "operationId": "loggers-name",
+                "parameters": [
+                {
+                    "name": "name",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "post": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'loggers-name'",
+                "operationId": "loggers-name_2",
+                "parameters": [
+                {
+                    "name": "name",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+                "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "string",
+                                "enum": [
+                                "TRACE",
+                                "DEBUG",
+                                "INFO",
+                                "WARN",
+                                "ERROR",
+                                "FATAL",
+                                "OFF"
+                            ]
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v1/books/deleted": {
+        "get": {
+            "tags": [
+                "books-controller"
+            ],
+                "operationId": "GetAllDeleted",
+                "parameters": [
+                {
+                    "name": "page",
+                    "in": "query",
+                    "description": "Zero-based page index (0..N)",
+                    "required": false,
+                    "schema": {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0
+                    }
+                },
+                {
+                    "name": "size",
+                    "in": "query",
+                    "description": "The size of the page to be returned",
+                    "required": false,
+                    "schema": {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20
+                    }
+                },
+                {
+                    "name": "sort",
+                    "in": "query",
+                    "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v1/book-category/deleted": {
+        "get": {
+            "tags": [
+                "category-controller"
+            ],
+                "operationId": "GetAllDeleted_1",
+                "parameters": [
+                {
+                    "name": "page",
+                    "in": "query",
+                    "description": "Zero-based page index (0..N)",
+                    "required": false,
+                    "schema": {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0
+                    }
+                },
+                {
+                    "name": "size",
+                    "in": "query",
+                    "description": "The size of the page to be returned",
+                    "required": false,
+                    "schema": {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20
+                    }
+                },
+                {
+                    "name": "sort",
+                    "in": "query",
+                    "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator root web endpoint",
+                "operationId": "links",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object",
+                                    "additionalProperties": {
+                                    "type": "object",
+                                        "additionalProperties": {
+                                        "$ref": "#/components/schemas/Link"
+                                    }
+                                }
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object",
+                                    "additionalProperties": {
+                                    "type": "object",
+                                        "additionalProperties": {
+                                        "$ref": "#/components/schemas/Link"
+                                    }
+                                }
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                    "additionalProperties": {
+                                    "type": "object",
+                                        "additionalProperties": {
+                                        "$ref": "#/components/schemas/Link"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/threaddump": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'threaddump'",
+                "operationId": "threaddump",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "text/plain;charset=UTF-8": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/scheduledtasks": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'scheduledtasks'",
+                "operationId": "scheduledtasks",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/metrics": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'metrics'",
+                "operationId": "metrics",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/metrics/{requiredMetricName}": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'metrics-requiredMetricName'",
+                "operationId": "metrics-requiredMetricName",
+                "parameters": [
+                {
+                    "name": "requiredMetricName",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/mappings": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'mappings'",
+                "operationId": "mappings",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/loggers": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'loggers'",
+                "operationId": "loggers",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/info": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'info'",
+                "operationId": "info",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/heapdump": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'heapdump'",
+                "operationId": "heapdump",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/octet-stream": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/health": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'health'",
+                "operationId": "health",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/health/**": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'health-path'",
+                "operationId": "health-path",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/env": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'env'",
+                "operationId": "env",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/env/{toMatch}": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'env-toMatch'",
+                "operationId": "env-toMatch",
+                "parameters": [
+                {
+                    "name": "toMatch",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/configprops": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'configprops'",
+                "operationId": "configprops",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/configprops/{prefix}": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'configprops-prefix'",
+                "operationId": "configprops-prefix",
+                "parameters": [
+                {
+                    "name": "prefix",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/conditions": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'conditions'",
+                "operationId": "conditions",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/caches": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'caches'",
+                "operationId": "caches",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "delete": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'caches'",
+                "operationId": "caches_2",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/caches/{cache}": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'caches-cache'",
+                "operationId": "caches-cache",
+                "parameters": [
+                {
+                    "name": "cache",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "delete": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'caches-cache'",
+                "operationId": "caches-cache_2",
+                "parameters": [
+                {
+                    "name": "cache",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/actuator/beans": {
+        "get": {
+            "tags": [
+                "Actuator"
+            ],
+                "summary": "Actuator web endpoint 'beans'",
+                "operationId": "beans",
+                "responses": {
+                "200": {
+                    "description": "OK",
+                        "content": {
+                        "application/vnd.spring-boot.actuator.v3+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/vnd.spring-boot.actuator.v2+json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not Found",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal Server Error",
+                        "content": {
+                        "*/*": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+},
+    "components": {
+    "schemas": {
+        "ApiResponse": {
+            "type": "object",
+                "properties": {
+                "timestamp": {
+                    "type": "string",
+                        "format": "date-time"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "isSuccess": {
+                    "type": "boolean"
+                },
+                "isError": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "CreateBook": {
+            "required": [
+                "author",
+                "isbn",
+                "publisher",
+                "title"
+            ],
+                "type": "object",
+                "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "categories": {
+                    "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                        "type": "integer",
+                            "format": "int64"
+                    }
+                },
+                "author": {
+                    "type": "string"
+                },
+                "isbn": {
+                    "type": "string"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "favourite": {
+                    "type": "boolean"
+                },
+                "datePublished": {
+                    "type": "string",
+                        "format": "date"
+                }
+            }
+        },
+        "LongWrapper": {
+            "required": [
+                "ids"
+            ],
+                "type": "object",
+                "properties": {
+                "ids": {
+                    "type": "array",
+                        "items": {
+                        "type": "integer",
+                            "format": "int64"
+                    }
+                }
+            }
+        },
+        "CreateBookCategory": {
+            "required": [
+                "categoryDescription",
+                "categoryName"
+            ],
+                "type": "object",
+                "properties": {
+                "categoryName": {
+                    "type": "string"
+                },
+                "categoryDescription": {
+                    "type": "string"
+                }
+            }
+        },
+        "Link": {
+            "type": "object",
+                "properties": {
+                "href": {
+                    "type": "string"
+                },
+                "templated": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}
+}
