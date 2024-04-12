@@ -1,3 +1,4 @@
 job1:
+    image: nodejs
     script:
         - echo "This is my first gitlab job"
