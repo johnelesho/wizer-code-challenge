@@ -1,4 +1,10 @@
-job1:
-    image: nodejs
+build a laptop:
+    image: alpine
     script:
         - echo "This is my first gitlab job"
+        - mkdir build
+        - touch build/computer.txt
+        - echo "Mainboard" >> build/computer.txt
+        - cat build/computer.txt
+        - echo "Keyboard" >> build/computer.txt
+        - cat build/computer.txt
