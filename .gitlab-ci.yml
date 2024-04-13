@@ -16,9 +16,9 @@ build a laptop:
         - mkdir build
         - touch $build_file_name
         - echo "Mainboard" >> $build_file_name
-        - cat build/computer.txt
+        - cat $build_file_name
         - echo "Keyboard" >> $build_file_name
-        - cat build/computer.txt
+        - cat $build_file_name
 
 test laptop:
     image: alpine
