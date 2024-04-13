@@ -2,13 +2,13 @@ stages:
     - build
     - test
 build:
-    image: 3.9.6-eclipse-temurin-17-alpine
+    image: maven:3.9.6-eclipse-temurin-17-alpine
     stage: build
     script: 
         - mvn clean compile build
 
 test:
-    image: 3.9.6-eclipse-temurin-17-alpine
+    image: maven:3.9.6-eclipse-temurin-17-alpine
     script: 
         - mvn test
     
