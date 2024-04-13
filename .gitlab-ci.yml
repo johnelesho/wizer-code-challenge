@@ -1,5 +1,10 @@
+stages:
+    - build
+    - test
+
 build a laptop:
     image: alpine
+    stage: build
     script:
         - echo "This is my first gitlab job"
         - mkdir build
@@ -8,3 +13,9 @@ build a laptop:
         - cat build/computer.txt
         - echo "Keyboard" >> build/computer.txt
         - cat build/computer.txt
+
+test laptop:
+    image: alpine
+    stage: test
+    script:
+        - test -f build/computer.txt
