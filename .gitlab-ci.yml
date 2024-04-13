@@ -21,6 +21,8 @@ deploy to s3:
     image: 
         name: amazon/aws-cli:2.15.38
         entrypoint: [""]
+    rules:
+        - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
     script:
         - aws --version
         - echo "Hello S3" > test.txt
