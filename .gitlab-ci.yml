@@ -23,3 +23,5 @@ deploy to s3:
         entrypoint: [""]
     script:
         - aws --version
+        - echo "Hello S3" > test.txt
+        - aws s3 cp test.txt arn:aws:s3:::johnelesho-test
