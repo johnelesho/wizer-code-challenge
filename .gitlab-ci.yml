@@ -2,6 +2,9 @@ stages:
     - build
     - test
 
+variables:
+    build_file_name: build/laptop.txt
+
 build a laptop:
     image: alpine
     stage: build
@@ -11,16 +14,16 @@ build a laptop:
     script:
         - echo "This is my first gitlab job"
         - mkdir build
-        - touch build/computer.txt
-        - echo "Mainboard" >> build/computer.txt
+        - touch $build_file_name
+        - echo "Mainboard" >> $build_file_name
         - cat build/computer.txt
-        - echo "Keyboard" >> build/computer.txt
+        - echo "Keyboard" >> $build_file_name
         - cat build/computer.txt
 
 test laptop:
     image: alpine
     stage: test
     script:
-        - test -f build/computer.txt
-        - grep "Mainboard" build/computer.txt
-        - grep "Keyboard" build/computer.txt
+        - test -f $build_file_name
+        - grep "Mainboard" $build_file_name
+        - grep "Keyboard" $build_file_name
