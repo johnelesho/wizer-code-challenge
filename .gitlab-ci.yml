@@ -5,6 +5,9 @@ stages:
 build a laptop:
     image: alpine
     stage: build
+    artifacts:
+       paths:
+           - "build/computer.txt"
     script:
         - echo "This is my first gitlab job"
         - mkdir build
