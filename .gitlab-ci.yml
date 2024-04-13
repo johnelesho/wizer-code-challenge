@@ -7,7 +7,7 @@ build a laptop:
     stage: build
     artifacts:
        paths:
-           - "build/computer.txt"
+           - "build"
     script:
         - echo "This is my first gitlab job"
         - mkdir build
@@ -22,3 +22,5 @@ test laptop:
     stage: test
     script:
         - test -f build/computer.txt
+        - grep "Mainboard" build/computer.txt
+        - grep "Keyboard" build/computer.txt
